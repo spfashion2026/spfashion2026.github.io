@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Clothing Store</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<h1>👗 My Clothing Store</h1>
+<p>New Arrivals | Trendy | Affordable</p>
+</header>
+
+<div class="admin-bar">
+<button onclick="openAdmin()">🔐 Admin Login</button>
+</div>
+
+<div id="adminPanel" class="admin-panel" style="display:none;">
+<input type="password" id="adminPass" placeholder="Admin Password">
+<button onclick="login()">Login</button>
+
+<div id="adminControls" style="display:none;">
+<h3>Add Product</h3>
+<input id="pname" placeholder="Product Name">
+<input id="pprice" placeholder="Price">
+<input id="pimage" placeholder="Image URL">
+<input id="pmsg" placeholder="WhatsApp Message">
+<button onclick="addProduct()">Add Product</button>
+</div>
+</div>
+
+<section class="products" id="productList"></section>
+
+<footer>
+<p>📞 WhatsApp Orders Available</p>
+</footer>
+
+<script>
+const ADMIN_PASSWORD = "admin123";
+const WHATSAPP = "919876543210";
+
+function openAdmin() {
+document.getElementById("adminPanel").style.display = "block";
+}
+
+function login() {
+if (adminPass.value === ADMIN_PASSWORD) {
+adminControls.style.display = "block";
+} else {
+alert("Wrong password");
+}
+}
+
+function addProduct() {
+const product = {
+name: pname.value,
+price: pprice.value,
+image: pimage.value,
+msg: pmsg.value || "I want to order " + pname.value
+};
+
+let products = JSON.parse(localStorage.getItem("products")) || [];
+products.push(product);
+localStorage.setItem("products", JSON.stringify(products));
+renderProducts();
+pname.value = pprice.value = pimage.value = pmsg.value = "";
+}
+
+function renderProducts() {
+productList.innerHTML = "";
+let products = JSON.parse(localStorage.getItem("products")) || [];
+
+products.forEach((p, i) => {
+productList.innerHTML += `
+<div class="product">
+<img src="${p.image}">
+<h3>${p.name}</h3>
+<p>₹${p.price}</p>
+<a class="btn" target="_blank"
+href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(p.msg)}">
+Order on WhatsApp</a>
+<button class="delete" onclick="deleteProduct(${i})">Delete</button>
+</div>`;
+});
+}
+
+function deleteProduct(i) {
+let products = JSON.parse(localStorage.getItem("products"));
+products.splice(i, 1);
+localStorage.setItem("products", JSON.stringify(products));
+renderProducts();
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>
