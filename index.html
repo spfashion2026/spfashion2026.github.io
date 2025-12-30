@@ -3,31 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>SP Fashion</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
-<header>
+<header class="site-header">
   <h1 class="logo">SP Fashion</h1>
-  <p>Trendy Kurtis | Sarees | Dresses</p>
+  <p class="tagline">Trendy Kurtis | Sarees | Dresses</p>
 </header>
 
 <div class="admin-bar">
   <button onclick="openAdmin()">🔐 Admin Login</button>
 </div>
 
-<!-- Admin Panel -->
-<div id="adminPanel" class="admin-panel" style="display:none;">
+<div id="adminPanel" class="admin-panel">
   <input type="password" id="adminPass" placeholder="Admin Password">
   <button onclick="login()">Login</button>
 
-  <div id="adminControls" style="display:none;">
+  <div id="adminControls">
     <h3>Add Product</h3>
     <input id="pname" placeholder="Product Name">
     <input id="pprice" placeholder="Price">
     <input id="pimage" placeholder="Image URL">
-    
+
     <select id="pcategory">
       <option value="Kurti">Kurti</option>
       <option value="Saree">Saree</option>
@@ -38,7 +37,6 @@
   </div>
 </div>
 
-<!-- Category Filter -->
 <div class="filters">
   <button onclick="filterProducts('All')">All</button>
   <button onclick="filterProducts('Kurti')">Kurti</button>
@@ -48,14 +46,12 @@
 
 <section class="products" id="productList"></section>
 
-<!-- Floating WhatsApp -->
-<a class="float-whatsapp" target="_blank"
-   href="https://wa.me/9566009530?text=Hi! I want to order from SP Fashion">
-  💬
-</a>
+<a class="whatsapp-float"
+   href="https://wa.me/9566009530"
+   target="_blank">💬</a>
 
 <footer>
-  <p>© 2026 SP Fashion | WhatsApp Orders Only</p>
+  © 2026 SP Fashion | WhatsApp Orders Only
 </footer>
 
 <script>
@@ -69,11 +65,10 @@ function openAdmin() {
 }
 
 function login() {
-  const pass = document.getElementById("adminPass").value;
-  if (pass === ADMIN_PASSWORD) {
+  if (adminPass.value === ADMIN_PASSWORD) {
     isAdmin = true;
-    document.getElementById("adminControls").style.display = "block";
-    document.getElementById("adminPass").style.display = "none";
+    adminControls.style.display = "block";
+    adminPass.style.display = "none";
     renderProducts();
     alert("Admin login successful");
   } else {
@@ -115,12 +110,11 @@ function renderProducts() {
         <img src="${p.image}">
         <h3>${p.name}</h3>
         <p class="price">₹${p.price}</p>
-        <p class="cat">${p.category}</p>
+        <p class="category">${p.category}</p>
 
-        <a class="btn" target="_blank"
-           href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}">
-          Order on WhatsApp
-        </a>
+        <a class="btn"
+           href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}"
+           target="_blank">Order on WhatsApp</a>
 
         ${isAdmin ? `<button class="delete" onclick="deleteProduct(${i})">Delete</button>` : ``}
       </div>
