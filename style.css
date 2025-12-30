@@ -9,7 +9,7 @@ body {
   background: #0f1b2d;
   color: white;
   text-align: center;
-  padding: 20px;
+  padding: 25px 15px;
 }
 
 .logo {
@@ -23,7 +23,7 @@ body {
   letter-spacing: 2px;
 }
 
-.site-header p {
+.tagline {
   color: #f4b6c2;
   font-size: 16px;
 }
@@ -35,22 +35,48 @@ body {
 }
 
 .admin-bar button {
-  padding: 10px 20px;
+  padding: 10px 25px;
   border: none;
   background: #0f1b2d;
   color: white;
-  border-radius: 5px;
+  border-radius: 25px;
   cursor: pointer;
 }
 
-/* CATEGORY BUTTONS */
-.categories {
+/* ADMIN PANEL */
+.admin-panel {
+  display: none;
+  background: white;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.admin-panel input,
+.admin-panel select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.admin-panel button {
+  width: 100%;
+  padding: 10px;
+  background: #0f1b2d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+/* FILTER BUTTONS */
+.filters {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.categories button {
-  padding: 8px 15px;
+.filters button {
+  padding: 8px 18px;
   margin: 5px;
   border: 1px solid #0f1b2d;
   background: white;
@@ -58,7 +84,7 @@ body {
   border-radius: 20px;
 }
 
-.categories button:hover {
+.filters button:hover {
   background: #0f1b2d;
   color: white;
 }
@@ -77,6 +103,7 @@ body {
   padding: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   text-align: center;
+  position: relative;
 }
 
 .product img {
@@ -86,24 +113,63 @@ body {
 
 /* OFFER BADGE */
 .offer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
   background: #ff9800;
   color: white;
-  display: inline-block;
   padding: 5px 10px;
   border-radius: 15px;
-  font-size: 14px;
-  margin-top: 10px;
+  font-size: 13px;
 }
 
-/* WHATSAPP BUTTON */
+/* PRICE & CATEGORY */
+.price {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.category {
+  font-size: 14px;
+  color: #777;
+}
+
+/* WHATSAPP ORDER BUTTON */
 .btn {
   display: inline-block;
   margin-top: 10px;
   background: #25d366;
   color: white;
-  padding: 10px 15px;
+  padding: 10px 18px;
   text-decoration: none;
   border-radius: 25px;
+  font-size: 14px;
+}
+
+/* DELETE BUTTON (ADMIN) */
+.delete {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background: #e53935;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* WHATSAPP FLOAT */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #25d366;
+  color: white;
+  font-size: 24px;
+  padding: 12px 15px;
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* FOOTER */
@@ -113,4 +179,5 @@ footer {
   text-align: center;
   padding: 15px;
   margin-top: 30px;
+  font-size: 14px;
 }
