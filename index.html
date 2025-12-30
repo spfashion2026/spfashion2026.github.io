@@ -26,11 +26,11 @@
 
 <!-- ADMIN PANEL -->
 <section id="adminPanel" class="admin-panel">
-  <h2>Add Product</h2>
+  <h2 id="formTitle">Add Product</h2>
 
   <input id="pname" placeholder="Product Name">
   <input id="pprice" type="number" placeholder="Original Price ₹">
-  <input id="pdiscount" type="number" placeholder="Discount % (optional)">
+  <input id="pdiscount" type="number" placeholder="Discount %">
   <input id="pimage" placeholder="Image URL">
 
   <select id="pcategory">
@@ -39,7 +39,7 @@
     <option>Dress</option>
   </select>
 
-  <button onclick="addProduct()">Add Product</button>
+  <button onclick="saveProduct()" id="saveBtn">Add Product</button>
 </section>
 
 <!-- FILTERS -->
@@ -53,7 +53,7 @@
 <!-- PRODUCTS -->
 <section class="products" id="productList"></section>
 
-<!-- WHATSAPP -->
+<!-- WHATSAPP FLOAT -->
 <a class="whatsapp-float" href="https://wa.me/9566009530" target="_blank">💬</a>
 
 <footer>
@@ -63,8 +63,10 @@
 <script>
 const ADMIN_PASSWORD = "spadmin2026";
 const WHATSAPP = "9566009530";
+
 let isAdmin = false;
 let currentFilter = "All";
+let editIndex = null;
 
 /* ADMIN LOGIN */
 function adminLogin() {
@@ -72,15 +74,17 @@ function adminLogin() {
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
     document.getElementById("adminPanel").style.display = "block";
-    renderProducts();
     alert("Admin Access Granted");
+    renderProducts();
   } else {
     alert("Access Denied");
   }
 }
 
-/* ADD PRODUCT */
-function addProduct() {
+/* SAVE (ADD / EDIT) PRODUCT */
+function saveProduct() {
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+
   const product = {
     name: pname.value,
     price: Number(pprice.value),
@@ -89,12 +93,49 @@ function addProduct() {
     category: pcategory.value
   };
 
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-  products.push(product);
-  localStorage.setItem("products", JSON.stringify(products));
+  if (editIndex !== null) {
+    products[editIndex] = product;
+    editIndex = null;
+    document.getElementById("formTitle").innerText = "Add Product";
+    document.getElementById("saveBtn").innerText = "Add Product";
+  } else {
+    products.push(product);
+  }
 
-  pname.value = pprice.value = pdiscount.value = pimage.value = "";
+  localStorage.setItem("products", JSON.stringify(products));
+  clearForm();
   renderProducts();
+}
+
+/* EDIT PRODUCT */
+function editProduct(index) {
+  const products = JSON.parse(localStorage.getItem("products"));
+
+  pname.value = products[index].name;
+  pprice.value = products[index].price;
+  pdiscount.value = products[index].discount;
+  pimage.value = products[index].image;
+  pcategory.value = products[index].category;
+
+  editIndex = index;
+  document.getElementById("formTitle").innerText = "Edit Product";
+  document.getElementById("saveBtn").innerText = "Update Product";
+}
+
+/* DELETE PRODUCT */
+function deleteProduct(index) {
+  const products = JSON.parse(localStorage.getItem("products"));
+  products.splice(index, 1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+}
+
+/* CLEAR FORM */
+function clearForm() {
+  pname.value = "";
+  pprice.value = "";
+  pdiscount.value = "";
+  pimage.value = "";
 }
 
 /* FILTER */
@@ -103,7 +144,7 @@ function filterProducts(cat) {
   renderProducts();
 }
 
-/* RENDER */
+/* RENDER PRODUCTS */
 function renderProducts() {
   productList.innerHTML = "";
   const products = JSON.parse(localStorage.getItem("products")) || [];
@@ -132,18 +173,14 @@ function renderProducts() {
           href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}"
           target="_blank">Order on WhatsApp</a>
 
-        ${isAdmin ? `<button class="delete" onclick="deleteProduct(${i})">Delete</button>` : ""}
+        ${isAdmin ? `
+          <div class="admin-actions">
+            <button onclick="editProduct(${i})" class="edit">Edit</button>
+            <button onclick="deleteProduct(${i})" class="delete">Delete</button>
+          </div>` : ""}
       </div>
     `;
   });
-}
-
-/* DELETE */
-function deleteProduct(i) {
-  const products = JSON.parse(localStorage.getItem("products"));
-  products.splice(i, 1);
-  localStorage.setItem("products", JSON.stringify(products));
-  renderProducts();
 }
 
 renderProducts();
