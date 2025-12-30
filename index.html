@@ -1,97 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>My Clothing Store</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>My Clothing Store</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <header>
-<h1>👗 My Clothing Store</h1>
-<p>New Arrivals | Trendy | Affordable</p>
+  <h1>👗 My Clothing Store</h1>
+  <p>New Arrivals | Trendy | Affordable</p>
 </header>
 
+<!-- Admin Login Button -->
 <div class="admin-bar">
-<button onclick="openAdmin()">🔐 Admin Login</button>
+  <button onclick="openAdmin()">🔐 Admin Login</button>
 </div>
 
+<!-- Admin Panel -->
 <div id="adminPanel" class="admin-panel" style="display:none;">
-<input type="password" id="adminPass" placeholder="Admin Password">
-<button onclick="login()">Login</button>
+  <input type="password" id="adminPass" placeholder="Admin Password">
+  <button onclick="login()">Login</button>
 
-<div id="adminControls" style="display:none;">
-<h3>Add Product</h3>
-<input id="pname" placeholder="Product Name">
-<input id="pprice" placeholder="Price">
-<input id="pimage" placeholder="Image URL">
-<input id="pmsg" placeholder="WhatsApp Message">
-<button onclick="addProduct()">Add Product</button>
-</div>
+  <!-- Admin Controls -->
+  <div id="adminControls" style="display:none;">
+    <h3>Add Product</h3>
+    <input id="pname" placeholder="Product Name">
+    <input id="pprice" placeholder="Price">
+    <input id="pimage" placeholder="Image URL">
+    <input id="pmsg" placeholder="WhatsApp Message (optional)">
+    <button onclick="addProduct()">Add Product</button>
+  </div>
 </div>
 
+<!-- Products Section -->
 <section class="products" id="productList"></section>
 
 <footer>
-<p>📞 WhatsApp Orders Available</p>
+  <p>📞 WhatsApp Orders Available</p>
 </footer>
 
 <script>
-const ADMIN_PASSWORD = "mypassword2026";
-const WHATSAPP = "9566009530";
+/* ================= CONFIG ================= */
+const ADMIN_PASSWORD = "mypassword2026";   // CHANGE PASSWORD HERE
+const WHATSAPP = "9566009530";              // Your WhatsApp number (no +)
 
+/* ================= ADMIN ================= */
 function openAdmin() {
-document.getElementById("adminPanel").style.display = "block";
+  document.getElementById("adminPanel").style.display = "block";
 }
 
 function login() {
-if (adminPass.value === ADMIN_PASSWORD) {
-adminControls.style.display = "block";
-} else {
-alert("Wrong password");
-}
+  const enteredPass = document.getElementById("adminPass").value;
+  const adminControls = document.getElementById("adminControls");
+
+  if (enteredPass === ADMIN_PASSWORD) {
+    adminControls.style.display = "block";
+    document.getElementById("adminPass").style.display = "none";
+    alert("Admin login successful");
+  } else {
+    alert("Wrong password");
+  }
 }
 
+/* ================= PRODUCTS ================= */
 function addProduct() {
-const product = {
-name: pname.value,
-price: pprice.value,
-image: pimage.value,
-msg: pmsg.value || "I want to order " + pname.value
-};
+  const product = {
+    name: document.getElementById("pname").value,
+    price: document.getElementById("pprice").value,
+    image: document.getElementById("pimage").value,
+    msg:
+      document.getElementById("pmsg").value ||
+      "I want to order " + document.getElementById("pname").value
+  };
 
-let products = JSON.parse(localStorage.getItem("products")) || [];
-products.push(product);
-localStorage.setItem("products", JSON.stringify(products));
-renderProducts();
-pname.value = pprice.value = pimage.value = pmsg.value = "";
+  if (!product.name || !product.price || !product.image) {
+    alert("Please fill all product details");
+    return;
+  }
+
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  products.push(product);
+  localStorage.setItem("products", JSON.stringify(products));
+
+  renderProducts();
+
+  document.getElementById("pname").value = "";
+  document.getElementById("pprice").value = "";
+  document.getElementById("pimage").value = "";
+  document.getElementById("pmsg").value = "";
 }
 
 function renderProducts() {
-productList.innerHTML = "";
-let products = JSON.parse(localStorage.getItem("products")) || [];
+  const productList = document.getElementById("productList");
+  productList.innerHTML = "";
 
-products.forEach((p, i) => {
-productList.innerHTML += `
-<div class="product">
-<img src="${p.image}">
-<h3>${p.name}</h3>
-<p>₹${p.price}</p>
-<a class="btn" target="_blank"
-href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(p.msg)}">
-Order on WhatsApp</a>
-<button class="delete" onclick="deleteProduct(${i})">Delete</button>
-</div>`;
-});
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+
+  products.forEach((p, i) => {
+    productList.innerHTML += `
+      <div class="product">
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
+        <a class="btn" target="_blank"
+          href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(p.msg)}">
+          Order on WhatsApp
+        </a>
+        <button class="delete" onclick="deleteProduct(${i})">Delete</button>
+      </div>
+    `;
+  });
 }
 
 function deleteProduct(i) {
-let products = JSON.parse(localStorage.getItem("products"));
-products.splice(i, 1);
-localStorage.setItem("products", JSON.stringify(products));
-renderProducts();
+  let products = JSON.parse(localStorage.getItem("products"));
+  products.splice(i, 1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
 }
 
+/* ================= LOAD ================= */
 renderProducts();
 </script>
 
