@@ -3,41 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <title>SP Fashion</title>
-  <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="site-header">
-  <img src="Logo.png" alt="SP Fashion Logo" class="logo">
-  <h1 class="logo">SP Fashion</h1>
-  <p class="tagline">Trendy Kurtis | Sarees | Dresses</p>
+  <div class="header-inner">
+    <div class="brand">
+      <img src="logo.png" class="logo" alt="SP Fashion">
+      <div>
+        <h1>SP Fashion</h1>
+        <p class="tagline">Trendy Kurtis | Sarees | Dresses</p>
+      </div>
+    </div>
+
+    <!-- Hidden Admin Access -->
+    <button class="admin-btn" onclick="adminLogin()">Admin</button>
+  </div>
 </header>
 
-<div class="admin-bar">
-  <button onclick="openAdmin()">🔐 Admin Login</button>
-</div>
+<!-- ADMIN PANEL -->
+<section id="adminPanel" class="admin-panel">
+  <h2>Add Product</h2>
 
-<div id="adminPanel" class="admin-panel">
-  <input type="password" id="adminPass" placeholder="Admin Password">
-  <button onclick="login()">Login</button>
+  <input id="pname" placeholder="Product Name">
+  <input id="pprice" type="number" placeholder="Original Price ₹">
+  <input id="pdiscount" type="number" placeholder="Discount % (optional)">
+  <input id="pimage" placeholder="Image URL">
 
-  <div id="adminControls">
-    <h3>Add Product</h3>
-    <input id="pname" placeholder="Product Name">
-    <input id="pprice" placeholder="Price">
-    <input id="pimage" placeholder="Image URL">
+  <select id="pcategory">
+    <option>Kurti</option>
+    <option>Saree</option>
+    <option>Dress</option>
+  </select>
 
-    <select id="pcategory">
-      <option value="Kurti">Kurti</option>
-      <option value="Saree">Saree</option>
-      <option value="Dress">Dress</option>
-    </select>
+  <button onclick="addProduct()">Add Product</button>
+</section>
 
-    <button onclick="addProduct()">Add Product</button>
-  </div>
-</div>
-
+<!-- FILTERS -->
 <div class="filters">
   <button onclick="filterProducts('All')">All</button>
   <button onclick="filterProducts('Kurti')">Kurti</button>
@@ -45,86 +50,97 @@
   <button onclick="filterProducts('Dress')">Dress</button>
 </div>
 
+<!-- PRODUCTS -->
 <section class="products" id="productList"></section>
 
-<a class="whatsapp-float"
-   href="https://wa.me/9566009530"
-   target="_blank">💬</a>
+<!-- WHATSAPP -->
+<a class="whatsapp-float" href="https://wa.me/9566009530" target="_blank">💬</a>
 
 <footer>
   © 2026 SP Fashion | WhatsApp Orders Only
 </footer>
 
 <script>
-const ADMIN_PASSWORD = "mypassword2026";
+const ADMIN_PASSWORD = "spadmin2026";
 const WHATSAPP = "9566009530";
 let isAdmin = false;
 let currentFilter = "All";
 
-function openAdmin() {
-  document.getElementById("adminPanel").style.display = "block";
-}
-
-function login() {
-  if (adminPass.value === ADMIN_PASSWORD) {
+/* ADMIN LOGIN */
+function adminLogin() {
+  const pass = prompt("Enter Admin Password");
+  if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
-    adminControls.style.display = "block";
-    adminPass.style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
     renderProducts();
-    alert("Admin login successful");
+    alert("Admin Access Granted");
   } else {
-    alert("Wrong password");
+    alert("Access Denied");
   }
 }
 
+/* ADD PRODUCT */
 function addProduct() {
   const product = {
     name: pname.value,
-    price: pprice.value,
+    price: Number(pprice.value),
+    discount: Number(pdiscount.value || 0),
     image: pimage.value,
     category: pcategory.value
   };
 
-  let products = JSON.parse(localStorage.getItem("products")) || [];
+  const products = JSON.parse(localStorage.getItem("products")) || [];
   products.push(product);
   localStorage.setItem("products", JSON.stringify(products));
-  renderProducts();
 
-  pname.value = pprice.value = pimage.value = "";
+  pname.value = pprice.value = pdiscount.value = pimage.value = "";
+  renderProducts();
 }
 
+/* FILTER */
 function filterProducts(cat) {
   currentFilter = cat;
   renderProducts();
 }
 
+/* RENDER */
 function renderProducts() {
   productList.innerHTML = "";
-  let products = JSON.parse(localStorage.getItem("products")) || [];
+  const products = JSON.parse(localStorage.getItem("products")) || [];
 
   products.forEach((p, i) => {
     if (currentFilter !== "All" && p.category !== currentFilter) return;
 
+    const finalPrice = p.discount
+      ? Math.round(p.price - (p.price * p.discount / 100))
+      : p.price;
+
     productList.innerHTML += `
       <div class="product">
-        <span class="offer">🔥 10% OFF</span>
+        ${p.discount ? `<span class="offer">${p.discount}% OFF</span>` : ""}
         <img src="${p.image}">
         <h3>${p.name}</h3>
-        <p class="price">₹${p.price}</p>
+
+        <p class="price">
+          ₹${finalPrice}
+          ${p.discount ? `<span class="old">₹${p.price}</span>` : ""}
+        </p>
+
         <p class="category">${p.category}</p>
 
         <a class="btn"
-           href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}"
-           target="_blank">Order on WhatsApp</a>
+          href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}"
+          target="_blank">Order on WhatsApp</a>
 
-        ${isAdmin ? `<button class="delete" onclick="deleteProduct(${i})">Delete</button>` : ``}
+        ${isAdmin ? `<button class="delete" onclick="deleteProduct(${i})">Delete</button>` : ""}
       </div>
     `;
   });
 }
 
+/* DELETE */
 function deleteProduct(i) {
-  let products = JSON.parse(localStorage.getItem("products"));
+  const products = JSON.parse(localStorage.getItem("products"));
   products.splice(i, 1);
   localStorage.setItem("products", JSON.stringify(products));
   renderProducts();
