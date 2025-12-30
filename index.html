@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SP Fashion</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<header>
+  <h1 class="logo">SP Fashion</h1>
+  <p>Trendy Kurtis | Sarees | Dresses</p>
+</header>
+
+<div class="admin-bar">
+  <button onclick="openAdmin()">🔐 Admin Login</button>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="admin-panel" style="display:none;">
+  <input type="password" id="adminPass" placeholder="Admin Password">
+  <button onclick="login()">Login</button>
+
+  <div id="adminControls" style="display:none;">
+    <h3>Add Product</h3>
+    <input id="pname" placeholder="Product Name">
+    <input id="pprice" placeholder="Price">
+    <input id="pimage" placeholder="Image URL">
+    
+    <select id="pcategory">
+      <option value="Kurti">Kurti</option>
+      <option value="Saree">Saree</option>
+      <option value="Dress">Dress</option>
+    </select>
+
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+</div>
+
+<!-- Category Filter -->
+<div class="filters">
+  <button onclick="filterProducts('All')">All</button>
+  <button onclick="filterProducts('Kurti')">Kurti</button>
+  <button onclick="filterProducts('Saree')">Saree</button>
+  <button onclick="filterProducts('Dress')">Dress</button>
+</div>
+
+<section class="products" id="productList"></section>
+
+<!-- Floating WhatsApp -->
+<a class="float-whatsapp" target="_blank"
+   href="https://wa.me/9566009530?text=Hi! I want to order from SP Fashion">
+  💬
+</a>
+
+<footer>
+  <p>© 2026 SP Fashion | WhatsApp Orders Only</p>
+</footer>
+
+<script>
+const ADMIN_PASSWORD = "mypassword2026";
+const WHATSAPP = "9566009530";
+let isAdmin = false;
+let currentFilter = "All";
+
+function openAdmin() {
+  document.getElementById("adminPanel").style.display = "block";
+}
+
+function login() {
+  const pass = document.getElementById("adminPass").value;
+  if (pass === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.getElementById("adminControls").style.display = "block";
+    document.getElementById("adminPass").style.display = "none";
+    renderProducts();
+    alert("Admin login successful");
+  } else {
+    alert("Wrong password");
+  }
+}
+
+function addProduct() {
+  const product = {
+    name: pname.value,
+    price: pprice.value,
+    image: pimage.value,
+    category: pcategory.value
+  };
+
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  products.push(product);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+
+  pname.value = pprice.value = pimage.value = "";
+}
+
+function filterProducts(cat) {
+  currentFilter = cat;
+  renderProducts();
+}
+
+function renderProducts() {
+  productList.innerHTML = "";
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+
+  products.forEach((p, i) => {
+    if (currentFilter !== "All" && p.category !== currentFilter) return;
+
+    productList.innerHTML += `
+      <div class="product">
+        <span class="offer">🔥 10% OFF</span>
+        <img src="${p.image}">
+        <h3>${p.name}</h3>
+        <p class="price">₹${p.price}</p>
+        <p class="cat">${p.category}</p>
+
+        <a class="btn" target="_blank"
+           href="https://wa.me/${WHATSAPP}?text=I want to order ${p.name}">
+          Order on WhatsApp
+        </a>
+
+        ${isAdmin ? `<button class="delete" onclick="deleteProduct(${i})">Delete</button>` : ``}
+      </div>
+    `;
+  });
+}
+
+function deleteProduct(i) {
+  let products = JSON.parse(localStorage.getItem("products"));
+  products.splice(i, 1);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts();
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>
