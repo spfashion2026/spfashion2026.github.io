@@ -1,7 +1,6 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import dotenv from 'dotenv'
+dotenv.config()
 
-export const supabase = createClient(
-  'https://cfefmgignrpsnxepguhr.supabase.co',   // replace with your Supabase URL
-  'sb_publishable_T7RvISH2KWfNlbL8kKClFw_UrJA4h04'                       // replace with your anon/public key
-)
+import { createClient } from '@supabase/supabase-js'
 
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
