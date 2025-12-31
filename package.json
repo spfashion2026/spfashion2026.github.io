@@ -1,6 +1,7 @@
 {
   "name": "spfashion2026.github.io",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "supabaseTest.js",
   "scripts": {
