@@ -1,15 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
-import 'dotenv/config'; // if using .env
+import dotenv from 'dotenv'
+dotenv.config()
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_KEY
 
-async function testConnection() {
-  const { data, error } = await supabase.from('products').select('*').limit(1);
-  if (error) console.error('Connection failed:', error.message);
-  else console.log('Connection successful! Sample data:', data);
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+async function test() {
+  const { data, error } = await supabase.from('products').select('*')
+  if (error) console.error(error)
+  else console.log(data)
 }
 
-testConnection();
+test()
