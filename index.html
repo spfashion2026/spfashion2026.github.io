@@ -7,26 +7,56 @@
 </head>
 <body>
   <header>
-    <h1>SP Fashion</h1>
-    <p>Trendy Kurtis | Sarees | Dresses</p>
+    <div class="logo">
+      <img src="Logo.png" alt="SP Fashion Logo">
+      <h1>SP Fashion</h1>
+    </div>
+    <nav>
+      <a href="#products-section">Shop</a>
+      <a href="#about-section">About</a>
+      <a href="#contact-section">Contact</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <section id="products-section">
+    <h2>Our Products</h2>
     <div id="filters">
       <button onclick="filterProducts('All')">All</button>
       <button onclick="filterProducts('Kurti')">Kurti</button>
       <button onclick="filterProducts('Saree')">Saree</button>
       <button onclick="filterProducts('Dress')">Dress</button>
     </div>
-  </header>
+    <div id="products-container"></div>
+  </section>
 
-  <div id="products-container" class="products-grid"></div>
+  <section id="about-section">
+    <h2>About Us</h2>
+    <p>SP Fashion brings you the latest trends in Kurtis, Sarees, and Dresses. Quality fabrics, affordable prices, and trendy designs.</p>
+  </section>
+
+  <section id="contact-section">
+    <h2>Contact Us</h2>
+    <p>Email: spfashion@example.com | Phone: +91-XXXXXXXXXX</p>
+    <p>Follow us on: 
+      <a href="#">Instagram</a> | 
+      <a href="#">Facebook</a> | 
+      <a href="#">WhatsApp</a>
+    </p>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 SP Fashion. All rights reserved.</p>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
+  </footer>
 
   <script type="module">
     import { supabase } from './supabase.js'
-
     let allProducts = []
 
     async function fetchProducts() {
       const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-      if (error) return console.error(error.message)
+      if (error) return console.error(error)
       allProducts = data
       renderProducts(allProducts)
     }
@@ -38,11 +68,11 @@
         const div = document.createElement('div')
         div.classList.add('product-card')
         div.innerHTML = `
-          ${p.discount ? `<span class="discount">${p.discount}% OFF</span>` : ''}
-          <img src="${p.image_url}" alt="${p.name}" />
           <h3>${p.name}</h3>
-          <p>₹${p.price}</p>
-          <a href="https://wa.me/?text=I want to order ${p.name}" class="whatsapp-btn" target="_blank">Order on WhatsApp</a>
+          <p>${p.category}</p>
+          <p>₹${p.price} | ${p.discount || 0}% OFF</p>
+          <img src="${p.image_url}" width="150">
+          <a href="https://wa.me/?text=I want to order ${p.name}" target="_blank">Order on WhatsApp</a>
         `
         container.appendChild(div)
       })
