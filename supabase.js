@@ -1,8 +1,15 @@
-// supabase.js
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { createClient } from '@supabase/supabase-js';
+import 'dotenv/config'; // if using .env
 
-// Replace with your Supabase URL and anon key
-export const supabase = createClient(
-  'https://YOUR_PROJECT.supabase.co',
-  'YOUR_ANON_KEY'
-)
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function testConnection() {
+  const { data, error } = await supabase.from('products').select('*').limit(1);
+  if (error) console.error('Connection failed:', error.message);
+  else console.log('Connection successful! Sample data:', data);
+}
+
+testConnection();
