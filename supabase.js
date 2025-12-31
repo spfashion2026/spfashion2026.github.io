@@ -1,6 +1,7 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
+// Public anon key for frontend
+export const supabase = createClient(
+  'https://cfefmgignrpsnxepguhr.supabase.co',
+  'sb_publishable_T7RvISH2KWfNlbL8kKClFw_UrJA4h04'
+)
