@@ -6,93 +6,54 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Admin Dashboard</h2>
-  <button onclick="logout()">Logout</button>
+  <h1>Admin Dashboard</h1>
 
-  <h3>Add Product</h3>
-  <input type="text" id="name" placeholder="Product Name">
-  <input type="number" id="price" placeholder="Price">
-  <input type="text" id="category" placeholder="Category (Kurti/Saree/Dress)">
-  <input type="file" id="image_file">
-  <input type="number" id="discount" placeholder="Discount %">
-  <button onclick="addProduct()">Add Product</button>
+  <h2>Add Product</h2>
+  <form id="add-product-form">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="text" name="category" placeholder="Category" required>
+    <input type="number" name="price" placeholder="Price" required>
+    <input type="number" name="discount" placeholder="Discount">
+    <input type="file" name="image" required>
+    <button type="submit">Add Product</button>
+  </form>
 
-  <h3>Products</h3>
-  <div id="products-list"></div>
+  <h2>All Products</h2>
+  <div id="products-container"></div>
 
-  <script type="module">
-    import { supabase } from './supabase.js'
-
+  <script>
     async function fetchProducts() {
-      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-      const container = document.getElementById('products-list')
+      const res = await fetch('http://localhost:3000/products')
+      const products = await res.json()
+      const container = document.getElementById('products-container')
       container.innerHTML = ''
-      if (error) return console.error(error.message)
-
-      data.forEach(p => {
+      products.forEach(p => {
         const div = document.createElement('div')
         div.innerHTML = `
-          <strong>${p.name}</strong> - ₹${p.price} - ${p.category} - ${p.discount || 0}%
-          <br>
-          <img src="${p.image_url}" width="100" style="margin:5px 0;">
-          <br>
-          <button onclick="editProduct('${p.id}')">Edit</button>
-          <button onclick="deleteProduct('${p.id}')">Delete</button>
+          <h3>${p.name}</h3>
+          <p>${p.category}</p>
+          <p>₹${p.price} | ${p.discount || 0}% OFF</p>
+          <img src="${p.image_url}" width="100">
+          <button onclick="deleteProduct(${p.id})">Delete</button>
         `
         container.appendChild(div)
       })
     }
 
-    async function addProduct() {
-      const name = document.getElementById('name').value
-      const price = document.getElementById('price').value
-      const category = document.getElementById('category').value
-      const discount = document.getElementById('discount').value
-      const fileInput = document.getElementById('image_file')
-      const file = fileInput.files[0]
-
-      if (!name || !price || !category || !file) return alert('Please fill all fields and select an image!')
-
-      // Upload image to Supabase Storage
-      const fileName = `${Date.now()}_${file.name}`
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file)
-
-      if (uploadError) return alert(uploadError.message)
-
-      const { publicUrl } = supabase.storage.from('product-images').getPublicUrl(fileName)
-
-      const { error } = await supabase.from('products').insert([{ name, price, category, discount, image_url: publicUrl }])
-      if (error) alert(error.message)
-      else {
-        fetchProducts()
-        document.getElementById('name').value = ''
-        document.getElementById('price').value = ''
-        document.getElementById('category').value = ''
-        document.getElementById('discount').value = ''
-        fileInput.value = ''
-      }
-    }
-
-    async function editProduct(id) {
-      const newName = prompt('Enter new name')
-      if (!newName) return
-      const { error } = await supabase.from('products').update({ name: newName }).eq('id', id)
-      if (error) alert(error.message)
-      else fetchProducts()
-    }
+    document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      await fetch('http://localhost:3000/products', {
+        method: 'POST',
+        body: formData
+      })
+      e.target.reset()
+      fetchProducts()
+    })
 
     async function deleteProduct(id) {
-      if (!confirm('Are you sure?')) return
-      const { error } = await supabase.from('products').delete().eq('id', id)
-      if (error) alert(error.message)
-      else fetchProducts()
-    }
-
-    async function logout() {
-      await supabase.auth.signOut()
-      window.location.href = 'admin.html'
+      await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' })
+      fetchProducts()
     }
 
     fetchProducts()
