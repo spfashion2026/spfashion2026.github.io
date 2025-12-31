@@ -25,7 +25,7 @@
     let allProducts = []
 
     async function fetchProducts() {
-      const { data, error } = await supabase.from('products').select('*')
+      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
       if (error) return console.error(error.message)
       allProducts = data
       renderProducts(allProducts)
