@@ -1,17 +1,7 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-import { createClient } from '@supabase/supabase-js'
+export const supabase = createClient(
+  'https://cfefmgignrpsnxepguhr.supabase.co',   // replace with your Supabase URL
+  'sb_publishable_T7RvISH2KWfNlbL8kKClFw_UrJA4h04'                       // replace with your anon/public key
+)
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY
-
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-async function test() {
-  const { data, error } = await supabase.from('products').select('*')
-  if (error) console.error(error)
-  else console.log(data)
-}
-
-test()
