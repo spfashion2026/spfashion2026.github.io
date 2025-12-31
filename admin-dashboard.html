@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+
+  <h3>Add Product</h3>
+  <input type="text" id="name" placeholder="Product Name">
+  <input type="number" id="price" placeholder="Price">
+  <input type="text" id="category" placeholder="Category">
+  <input type="text" id="image_url" placeholder="Image URL">
+  <input type="number" id="discount" placeholder="Discount %">
+  <button onclick="addProduct()">Add Product</button>
+
+  <h3>Products</h3>
+  <div id="products-list"></div>
+
+  <script type="module">
+    import { supabase } from './supabase.js'
+
+    async function fetchProducts() {
+      const { data, error } = await supabase.from('products').select('*')
+      const container = document.getElementById('products-list')
+      container.innerHTML = ''
+      if (error) return console.error(error.message)
+
+      data.forEach(p => {
+        const div = document.createElement('div')
+        div.innerHTML = `
+          <strong>${p.name}</strong> - ₹${p.price} - ${p.category} - ${p.discount || 0}% 
+          <button onclick="editProduct(${p.id})">Edit</button>
+          <button onclick="deleteProduct(${p.id})">Delete</button>
+        `
+        container.appendChild(div)
+      })
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('name').value
+      const price = document.getElementById('price').value
+      const category = document.getElementById('category').value
+      const image_url = document.getElementById('image_url').value
+      const discount = document.getElementById('discount').value
+
+      const { data, error } = await supabase.from('products').insert([{
+        name, price, category, image_url, discount
+      }])
+      if (error) alert(error.message)
+      else fetchProducts()
+    }
+
+    async function editProduct(id) {
+      const newName = prompt('Enter new name')
+      const { data, error } = await supabase.from('products').update({ name: newName }).eq('id', id)
+      if (error) alert(error.message)
+      else fetchProducts()
+    }
+
+    async function deleteProduct(id) {
+      const { data, error } = await supabase.from('products').delete().eq('id', id)
+      if (error) alert(error.message)
+      else fetchProducts()
+    }
+
+    async function logout() {
+      await supabase.auth.signOut()
+      window.location.href = 'admin.html'
+    }
+
+    fetchProducts()
+  </script>
+</body>
+</html>
